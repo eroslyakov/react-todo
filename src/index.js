@@ -1,21 +1,9 @@
-import React, { Component } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
 
-import TodoList from './components/todo-list';
-import SearchPanel from './components/search-panel';
-import AppHeader from './components/app-header';
+import App from './components/app/app';
 
-const todos = ['learn', 'build', 'debug'];
-
-const App = () => {
-    return (
-        <div>
-            <AppHeader />
-            <SearchPanel />
-            <TodoList items={ todos } />
-        </div>
-    )
-}
+ReactDOM.render(<App />, document.getElementById('root'));
 
 // class App extends Component {
 //     constructor() {
@@ -43,4 +31,3 @@ const App = () => {
 //     }
 // }
 
-ReactDOM.render(<App />, document.getElementById('root'));

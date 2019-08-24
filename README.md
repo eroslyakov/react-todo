@@ -1,1 +1,1 @@
-simple todo app with react
+simple todo app with react and bootstrap
