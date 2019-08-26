@@ -5,9 +5,15 @@ import './todo-list.css';
 const TodoList = (props) => {
     return (
         <ul className="list-group todo-list">
-            { props.items.map((item, idx) => 
-                <li key={idx.toString()+'item'} className="list-group-item">
-                    <TodoListItem label={item} />
+            { props.items.map(item => 
+                <li key={item.id} 
+                    className="list-group-item">
+                    <TodoListItem label={item.label}
+                                  important={item.important}
+                                  done={item.done}
+                                  onDeleted={() => props.onDeleted(item.id)}
+                                  onToggleImportant={() => props.onToggleImportant(item.id)}
+                                  onToggleDone={() => props.onToggleDone(item.id)} />
                 </li>) 
             }
         </ul>

@@ -8,6 +8,6 @@ const AppHeader = (props) => {
             <h2>{props.todo} more to do, {props.done} done</h2>
         </div>
     )
-}
+};
 
 export default AppHeader;
