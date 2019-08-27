@@ -11,23 +11,34 @@ class App extends Component {
     constructor() {
         super();
         this.state = {
-            todos: []
+            todos: this.getTodos(),
+            query: 'all'
         };
 
+        this.getTodos = this.getTodos.bind(this);
         this.deleteItem = this.deleteItem.bind(this);
         this.createNewItem = this.createNewItem.bind(this);
         this.addNewItem = this.addNewItem.bind(this);
-        this.findItemById = this.findItemById.bind(this);
         this.toggleProperty = this.toggleProperty.bind(this);
         this.onToggleImportant = this.onToggleImportant.bind(this);
         this.onToggleDone = this.onToggleDone.bind(this);
         this.doneUndoneCount = this.doneUndoneCount.bind(this);
+        this.handleSearch = this.handleSearch.bind(this);
+        this.handleFiltering = this.handleFiltering.bind(this);
+        this.filter = this.filter.bind(this);
+    }
+
+    getTodos() {
+        return (!localStorage.getItem('allTodos')) ?
+                                                [] :
+                JSON.parse(localStorage.getItem('allTodos'));
+
     }
 
     deleteItem(id) {
         this.setState(state => ({
             todos: state.todos.filter(todo => todo.id !== id)
-        }))
+        }));
     }
 
     createNewItem(label) {
@@ -45,16 +56,12 @@ class App extends Component {
         const newTodo = this.createNewItem(label);
         this.setState(state => ({
             todos: [...state.todos, newTodo]
-        }))
-    }
-
-    findItemById(id) {
-        return this.state.todos.findIndex(item => item.id === id);
+        }));
     }
 
     toggleProperty(id, property) {
-        const idx = this.findItemById(id);
-        const updtItem = {...this.state.todos[idx]};
+        const idx = this.state.todos.findIndex(item => item.id === id);
+        const updtItem = this.state.todos[idx];
         updtItem[property] = !updtItem[property];
 
         this.setState(state => ({
@@ -63,7 +70,7 @@ class App extends Component {
                 updtItem, 
                 ...state.todos.slice(idx+1)
             ]
-        }))
+        }));
     }
 
     onToggleImportant(id) {
@@ -80,16 +87,41 @@ class App extends Component {
         return [done, undone];
     }
 
+    handleSearch(substr) {
+        this.setState({ query: substr })
+    }
+
+    handleFiltering(query) {
+        if (query === 'active' || query === 'done') {
+            this.setState({ query: query })
+        } else {
+            this.setState({ query: 'all' })
+        }
+    }
+
+    filter(todos, query) { 
+        if(query === 'all') {
+            return todos;
+        }
+        return (this.state.query === 'active') ? todos.filter(item => !item.done) :
+                 (this.state.query === 'done') ? todos.filter(item => item.done) :
+                                                 todos.filter(item => item.label.indexOf(query) !== -1);
+    }
+
     render() {
         const headerData = this.doneUndoneCount();
+        const filteredTodos = this.filter(this.state.todos, this.state.query);
+        localStorage.setItem('allTodos', JSON.stringify(this.state.todos));
+
         return (
             <div className="todo-app">
                 <AppHeader todo={headerData[1]} done={headerData[0]}/>
                 <div className="top-panel d-flex">
-                    <SearchPanel />
-                    <ItemStatusFilter />
+                    <SearchPanel onSearch={this.handleSearch} />
+                    <ItemStatusFilter onFilter={this.handleFiltering}
+                                      btnClasses={this.state.query} />
                 </div>
-                <TodoList items={this.state.todos} 
+                <TodoList items={filteredTodos} 
                           onDeleted={this.deleteItem}
                           onToggleImportant={this.onToggleImportant}
                           onToggleDone={this.onToggleDone} /> 

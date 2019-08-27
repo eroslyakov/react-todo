@@ -8,14 +8,14 @@ class ItemAddForm extends Component {
         super(props);
         this.state = { value: '' };
 
-        this.createNewItem = this.createNewItem.bind(this);
+        this.onSubmit = this.onSubmit.bind(this);
         this.handleChange = this.handleChange.bind(this);
     }
 
-    createNewItem() {
-        let label = this.state.value;
+    onSubmit(event) {
+        event.preventDefault();
+        this.props.onAddNew(this.state.value);
         this.setState({ value: '' });
-        this.props.onAddNew(label);
     }
 
     handleChange(event) {
@@ -26,15 +26,15 @@ class ItemAddForm extends Component {
 
     render() {
         return (
-            <div className="bottom-panel d-flex">
+            <form className="bottom-panel d-flex"
+                  onSubmit={this.onSubmit}>
                 <input type="text"
                        className="form-control search-input"
-                       placeholder="add some text"
+                       placeholder="what needs to be done"
                        value={this.state.value}
                        onChange={this.handleChange} />
-                <button className="btn btn-outline-secondary"
-                        onClick={this.createNewItem}>add new</button>
-            </div>
+                <button className="btn btn-outline-secondary">add new</button>
+            </form>
         )
     }
 }
